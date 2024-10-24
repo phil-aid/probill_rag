@@ -477,3 +477,6 @@ doc_env/
 # application data
 ktem_app_data/
 gradio_tmp/
+db/
+settings.yaml copy.example
+settings.yaml.example

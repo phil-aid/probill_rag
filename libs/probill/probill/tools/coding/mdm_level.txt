@@ -1,0 +1,94 @@
+Determine the level of Medical Decision Making (MDM) for a given clinical scenario by evaluating the following criteria:
+
+Levels of MDM:
+
+	1.	Straightforward
+	2.	Low
+	3.	Moderate
+	4.	High
+
+Categories and Criteria:
+
+Straightforward:
+
+	•	Number and Complexity of Problems Addressed: Minimal 1 self-limited or minor problem.
+	•	Amount and Complexity of Data to be Reviewed: Minimal or none.
+	•	Risk of Complications and/or Morbidity or Mortality: Minimal risk from additional diagnostic testing or treatment.
+
+Low:
+
+	•	Number and Complexity of Problems Addressed:
+	•	Low:
+	•	2 or more self-limited or minor problems; or
+	•	1 stable, chronic illness; or
+	•	1 acute, uncomplicated illness or injury; or
+	•	1 stable, acute illness; or
+	•	1 acute, uncomplicated illness or injury requiring hospital inpatient or observation level of care.
+	•	Amount and Complexity of Data to be Reviewed: Limited (must meet the requirements of at least 1 out of 2 categories):
+	•	Category 1: Tests and Documents
+	•	Any combination of 2 from the following:
+	•	Review of prior external note(s) from each unique source*;
+	•	Review of the result(s) of each unique test*;
+	•	Ordering of each unique test*.
+	•	Category 2: Assessment requiring an independent historian(s)
+	•	(For the categories of independent interpretation of tests and discussion of management or test interpretation, see moderate or high).
+	•	Risk of Complications and/or Morbidity or Mortality: Low risk from additional diagnostic testing or treatment.
+
+Moderate:
+
+	•	Number and Complexity of Problems Addressed:
+	•	Moderate:
+	•	1 or more chronic illnesses with exacerbation, progression, or side effects of treatment; or
+	•	2 or more stable, chronic illnesses; or
+	•	1 undiagnosed new problem with uncertain prognosis; or
+	•	1 acute illness with systemic symptoms; or
+	•	1 acute, complicated injury.
+	•	Amount and Complexity of Data to be Reviewed: Moderate (must meet the requirements of at least 1 out of 3 categories):
+	•	Category 1: Tests, Documents, or Independent Historian(s)
+	•	Any combination of 3 from the following:
+	•	Review of prior external note(s) from each unique source*;
+	•	Review of the result(s) of each unique test*;
+	•	Ordering of each unique test*;
+	•	Assessment requiring an independent historian(s).
+	•	Category 2: Independent Interpretation of Tests
+	•	Independent interpretation of a test performed by another physician/other qualified healthcare professional (not separately reported).
+	•	Category 3: Discussion of Management or Test Interpretation
+	•	Discussion of management or test interpretation with an external physician/other qualified healthcare professional/appropriate source (not separately reported).
+	•	Risk of Complications and/or Morbidity or Mortality: Moderate risk from additional diagnostic testing or treatment.
+	•	Examples:
+	•	Prescription drug management;
+	•	Decision regarding minor surgery with identified patient or procedure risk factors;
+	•	Decision regarding elective major surgery without identified patient or procedure risk factors;
+	•	Diagnosis or treatment significantly limited by social determinants of health.
+
+High:
+
+	•	Number and Complexity of Problems Addressed:
+	•	High:
+	•	1 or more chronic illnesses with severe exacerbation, progression, or side effects of treatment; or
+	•	1 acute or chronic illness or injury that poses a threat to life or bodily function.
+	•	Amount and Complexity of Data to be Reviewed: Extensive (must meet the requirements of at least 2 out of 3 categories):
+	•	Category 1: Tests, Documents, or Independent Historian(s)
+	•	Any combination of 3 from the following:
+	•	Review of prior external note(s) from each unique source*;
+	•	Review of the result(s) of each unique test*;
+	•	Ordering of each unique test*;
+	•	Assessment requiring an independent historian(s).
+	•	Category 2: Independent Interpretation of Tests
+	•	Independent interpretation of a test performed by another physician/other qualified healthcare professional (not separately reported).
+	•	Category 3: Discussion of Management or Test Interpretation
+	•	Discussion of management or test interpretation with an external physician/other qualified healthcare professional/appropriate source (not separately reported).
+	•	Risk of Complications and/or Morbidity or Mortality: High risk from additional diagnostic testing or treatment.
+	•	Examples:
+	•	Drug therapy requiring intensive monitoring for toxicity;
+	•	Decision regarding elective major surgery with identified patient or procedure risk factors;
+	•	Decision regarding emergency major surgery;
+	•	Decision regarding hospitalization or escalation of hospital-level care;
+	•	Decision not to resuscitate or to de-escalate care because of poor prognosis;
+	•	Parenteral controlled substances.
+
+Notes:
+
+	•	*Unique source and unique test refer to distinct sources and tests not previously reviewed.
+
+Use this framework to classify the level of MDM for each clinical scenario presented.

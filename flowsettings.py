@@ -248,6 +248,7 @@ KH_RERANKINGS["cohere"] = {
 }
 
 KH_REASONINGS = [
+    "probill.reasoning.medical_coding.MedicalCodingPipeline",
     "ktem.reasoning.simple.FullQAPipeline",
     "ktem.reasoning.simple.FullDecomposeQAPipeline",
     "ktem.reasoning.react.ReactAgentPipeline",

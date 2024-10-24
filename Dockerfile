@@ -34,14 +34,20 @@ ENV PDFJS_PREBUILT_DIR="/app/libs/ktem/ktem/assets/prebuilt/pdfjs-dist"
 RUN bash scripts/download_pdfjs.sh $PDFJS_PREBUILT_DIR
 
 # Copy contents
-COPY . /app
-COPY .env.example /app/.env
+COPY ./libs/kotaemon /app/libs/kotaemon
+COPY ./libs/ktem /app/libs/ktem
+COPY ./scripts /app/scripts
+COPY ./docs /app/docs
+COPY ./templates /app/templates
+COPY ./Dockerfile /app/Dockerfile
+COPY ./libs/probill/probill/requirements.txt /app/probill/requirements.txt
+RUN pip install -r /app/probill/requirements.txt
 
 # Install pip packages
 RUN --mount=type=ssh  \
     --mount=type=cache,target=/root/.cache/pip  \
-    pip install -e "libs/kotaemon" \
-    && pip install -e "libs/ktem" \
+    pip install -e "libs/kotaemon[dev]" \
+    && pip install -e "libs/ktem[dev]" \
     && pip install "pdfservices-sdk@git+https://github.com/niallcm/pdfservices-python-sdk.git@bump-and-unfreeze-requirements"
 
 RUN --mount=type=ssh  \
@@ -53,8 +59,6 @@ RUN apt-get autoremove \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf ~/.cache
-
-CMD ["python", "app.py"]
 
 # Full version
 FROM lite AS full
@@ -89,5 +93,8 @@ RUN apt-get autoremove \
 
 # Download nltk packages as required for unstructured
 RUN python -c "from unstructured.nlp.tokenize import _download_nltk_packages_if_not_present; _download_nltk_packages_if_not_present()"
+
+COPY ./libs/probill/probill /app/probill
+COPY ./* /app/
 
 CMD ["python", "app.py"]

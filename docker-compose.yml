@@ -1,0 +1,30 @@
+
+services:
+  kotaemon:
+    build: 
+      context: ./
+      dockerfile: Dockerfile
+    env_file: 
+      - .env
+    environment:
+      - GRADIO_SERVER_NAME=0.0.0.0
+      - GRADIO_SERVER_PORT=7860
+    ports:
+      - "7860:7860"
+    volumes:
+      - ./ktem_app_data:/app/ktem_app_data
+      - type: bind
+        source: ./db/
+        target: ${DB_PATH}
+    stdin_open: true
+    tty: true
+    restart: always
+    networks:
+      custom_network:  # Attach to the custom network
+
+networks:
+  custom_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet:  172.0.17.0/24

@@ -1,0 +1,215 @@
+{
+    "Locations": {
+      "Office or Other Outpatient": {
+        "New Patient": {
+          "99202": {
+            "MDM Level": "Straightforward",
+            "Total Time Range": "15-29 minutes"
+          },
+          "99203": {
+            "MDM Level": "Low",
+            "Total Time Range": "30-44 minutes"
+          },
+          "99204": {
+            "MDM Level": "Moderate",
+            "Total Time Range": "45-59 minutes"
+          },
+          "99205": {
+            "MDM Level": "High",
+            "Total Time Range": "60-74 minutes"
+          }
+        },
+        "Established Patient": {
+          "99211": {
+            "MDM Level": "Straightforward",
+            "Total Time Range": "N/A"
+          },
+          "99212": {
+            "MDM Level": "Straightforward",
+            "Total Time Range": "10-19 minutes"
+          },
+          "99213": {
+            "MDM Level": "Low",
+            "Total Time Range": "20-29 minutes"
+          },
+          "99214": {
+            "MDM Level": "Moderate",
+            "Total Time Range": "30-39 minutes"
+          },
+          "99215": {
+            "MDM Level": "High",
+            "Total Time Range": "40-54 minutes"
+          }
+        }
+      },
+      "Hospital Inpatient or Observation Care": {
+        "Initial Care": {
+          "99221": {
+            "MDM Level": "Straightforward or Low",
+            "Total Time Range": "40 minutes"
+          },
+          "99222": {
+            "MDM Level": "Moderate",
+            "Total Time Range": "55 minutes"
+          },
+          "99223": {
+            "MDM Level": "High",
+            "Total Time Range": "75 minutes"
+          }
+        },
+        "Subsequent Care": {
+          "99231": {
+            "MDM Level": "Straightforward or Low",
+            "Total Time Range": "25 minutes"
+          },
+          "99232": {
+            "MDM Level": "Moderate",
+            "Total Time Range": "35 minutes"
+          },
+          "99233": {
+            "MDM Level": "High",
+            "Total Time Range": "50 minutes"
+          }
+        },
+        "Services Including Admit & Discharge": {
+          "99234": {
+            "MDM Level": "Straightforward or Low",
+            "Total Time Range": "45 minutes"
+          },
+          "99235": {
+            "MDM Level": "Moderate",
+            "Total Time Range": "70 minutes"
+          },
+          "99236": {
+            "MDM Level": "High",
+            "Total Time Range": "85 minutes"
+          }
+        }
+      },
+      "Inpatient or Observation Consultations": {
+        "99252": {
+          "MDM Level": "Straightforward",
+          "Total Time Range": "35 minutes"
+        },
+        "99253": {
+          "MDM Level": "Low",
+          "Total Time Range": "45 minutes"
+        },
+        "99254": {
+          "MDM Level": "Moderate",
+          "Total Time Range": "60 minutes"
+        },
+        "99255": {
+          "MDM Level": "High",
+          "Total Time Range": "80 minutes"
+        }
+      },
+      "Office or Other Outpatient Consultations": {
+        "99242": {
+          "MDM Level": "Straightforward",
+          "Total Time Range": "20 minutes"
+        },
+        "99243": {
+          "MDM Level": "Low",
+          "Total Time Range": "30 minutes"
+        },
+        "99244": {
+          "MDM Level": "Moderate",
+          "Total Time Range": "40 minutes"
+        },
+        "99245": {
+          "MDM Level": "High",
+          "Total Time Range": "55 minutes"
+        }
+      },
+      "Emergency Department Services": {
+        "99281": {
+          "MDM Level": "Straightforward",
+          "Total Time Range": "N/A"
+        },
+        "99282": {
+          "MDM Level": "Low",
+          "Total Time Range": "N/A"
+        },
+        "99283": {
+          "MDM Level": "Moderate",
+          "Total Time Range": "N/A"
+        },
+        "99284": {
+          "MDM Level": "Moderate",
+          "Total Time Range": "N/A"
+        },
+        "99285": {
+          "MDM Level": "High",
+          "Total Time Range": "N/A"
+        }
+      },
+      "Initial Nursing Facility Care": {
+        "99304": {
+          "MDM Level": "Straightforward or Low",
+          "Total Time Range": "25 minutes"
+        },
+        "99305": {
+          "MDM Level": "Moderate",
+          "Total Time Range": "35 minutes"
+        },
+        "99306": {
+          "MDM Level": "High",
+          "Total Time Range": "45 minutes"
+        }
+      },
+      "Subsequent Nursing Facility Care": {
+        "99307": {
+          "MDM Level": "Straightforward",
+          "Total Time Range": "10 minutes"
+        },
+        "99308": {
+          "MDM Level": "Low",
+          "Total Time Range": "15 minutes"
+        },
+        "99309": {
+          "MDM Level": "Moderate",
+          "Total Time Range": "30 minutes"
+        },
+        "99310": {
+          "MDM Level": "High",
+          "Total Time Range": "45 minutes"
+        }
+      },
+      "Home or Residence Services": {
+        "99341": {
+          "MDM Level": "Straightforward",
+          "Total Time Range": "15 minutes"
+        },
+        "99342": {
+          "MDM Level": "Low",
+          "Total Time Range": "30 minutes"
+        },
+        "99344": {
+          "MDM Level": "Moderate",
+          "Total Time Range": "60 minutes"
+        },
+        "99345": {
+          "MDM Level": "High",
+          "Total Time Range": "75 minutes"
+        },
+        "99347": {
+          "MDM Level": "Straightforward",
+          "Total Time Range": "20 minutes"
+        },
+        "99348": {
+          "MDM Level": "Low",
+          "Total Time Range": "30 minutes"
+        },
+        "99349": {
+          "MDM Level": "Moderate",
+          "Total Time Range": "40 minutes"
+        },
+        "99350": {
+          "MDM Level": "High",
+          "Total Time Range": "60 minutes"
+        }
+      }
+    }
+  }
+  

@@ -7,8 +7,8 @@ skip_workflows: []
 llm:
   api_key: ${GRAPHRAG_API_KEY}
   type: openai_chat # or azure_openai_chat
-  api_base: http://10.0.40.49:11434/v1
-  model: llama3.2:3b-instruct-fp16
+  api_base: ${OPENAI_API_BASE}
+  model: ${GRAPHRAG_LLM_MODEL}
   model_supports_json: true # recommended if this is available for your model.
   # max_tokens: 4000
   request_timeout: 1800.0
@@ -21,7 +21,7 @@ llm:
   # max_retries: 10
   # max_retry_wait: 10.0
   # sleep_on_rate_limit_recommendation: true # whether to sleep when azure suggests wait-times
-  concurrent_requests: 1 # the number of parallel inflight requests that may be made
+  concurrent_requests: 5 # the number of parallel inflight requests that may be made
   # temperature: 0 # temperature for sampling
   # top_p: 1 # top-p sampling
   # n: 1 # Number of completions to generate
@@ -39,9 +39,9 @@ embeddings:
   # batch_size: 16 # the number of documents to send in a single request
   # batch_max_tokens: 8191 # the maximum number of tokens to send in a single request
   llm:
-    api_base: http://10.0.40.49:11434/v1
+    api_base: ${OPENAI_API_BASE}
     api_key: ${GRAPHRAG_API_KEY}
-    model: nomic-embed-text:latest
+    model: ${GRAPHRAG_EMBEDDING_MODEL}
     type: openai_embedding
     # api_base: https://<instance>.openai.azure.com
     # api_version: 2024-02-15-preview
@@ -90,15 +90,15 @@ entity_extraction:
   ## llm: override the global llm settings for this task
   ## parallelization: override the global parallelization settings for this task
   ## async_mode: override the global async_mode settings for this task
-  prompt: "prompts/entity_extraction.txt"
-  entity_types: [organization,person,geo,event]
-  max_gleanings: 1
+  ## prompt: "prompts/entity_extraction.txt"
+  entity_types: [organization,person,physician,event,therapy,drug,treatment]
+  ## max_gleanings: 1
 
 summarize_descriptions:
   ## llm: override the global llm settings for this task
   ## parallelization: override the global parallelization settings for this task
   ## async_mode: override the global async_mode settings for this task
-  prompt: "prompts/summarize_descriptions.txt"
+  ## prompt: "prompts/summarize_descriptions.txt"
   max_length: 500
 
 claim_extraction:
@@ -106,7 +106,7 @@ claim_extraction:
   ## parallelization: override the global parallelization settings for this task
   ## async_mode: override the global async_mode settings for this task
   # enabled: true
-  prompt: "prompts/claim_extraction.txt"
+  ## prompt: "prompts/claim_extraction.txt"
   description: "Any claims or facts that could be relevant to information discovery."
   max_gleanings: 1
 
@@ -114,7 +114,7 @@ community_reports:
   ## llm: override the global llm settings for this task
   ## parallelization: override the global parallelization settings for this task
   ## async_mode: override the global async_mode settings for this task
-  prompt: "prompts/community_report.txt"
+  ## prompt: "prompts/community_report.txt"
   max_length: 2000
   max_input_length: 8000
 
