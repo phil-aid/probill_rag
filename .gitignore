@@ -478,5 +478,6 @@ doc_env/
 ktem_app_data/
 gradio_tmp/
 db/
+libs/probill/
 settings.yaml copy.example
 settings.yaml.example
