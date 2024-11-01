@@ -22,7 +22,7 @@ if not KH_APP_VERSION:
         # https://stackoverflow.com/a/59533071
         KH_APP_VERSION = version(KH_PACKAGE_NAME)
     except Exception:
-        KH_APP_VERSION = "local"
+        KH_APP_VERSION = "ProBiller"
 
 KH_ENABLE_FIRST_SETUP = True
 KH_DEMO_MODE = config("KH_DEMO_MODE", default=False, cast=bool)
@@ -35,7 +35,9 @@ KH_APP_DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 # User data directory
 KH_USER_DATA_DIR = KH_APP_DATA_DIR / "user_data"
+PROBILL_DATA_DIR = KH_APP_DATA_DIR / "probill_data"
 KH_USER_DATA_DIR.mkdir(parents=True, exist_ok=True)
+PROBILL_DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 # markdown output directory
 KH_MARKDOWN_OUTPUT_DIR = KH_APP_DATA_DIR / "markdown_cache_dir"
@@ -63,7 +65,7 @@ os.environ["HF_HUB_CACHE"] = str(KH_APP_DATA_DIR / "huggingface")
 KH_DOC_DIR = this_dir / "docs"
 
 KH_MODE = "dev"
-KH_FEATURE_CHAT_SUGGESTION = config("KH_FEATURE_CHAT_SUGGESTION", default=False)
+KH_FEATURE_CHAT_SUGGESTION = config("KH_FEATURE_CHAT_SUGGESTION", default=True)
 KH_FEATURE_USER_MANAGEMENT = config(
     "KH_FEATURE_USER_MANAGEMENT", default=True, cast=bool
 )
@@ -77,6 +79,9 @@ KH_FEATURE_USER_MANAGEMENT_PASSWORD = str(
 KH_ENABLE_ALEMBIC = False
 KH_DATABASE = f"sqlite:///{KH_USER_DATA_DIR / 'sql.db'}"
 KH_FILESTORAGE_PATH = str(KH_USER_DATA_DIR / "files")
+PROBILL_DATABASE = f"sqlite:///{PROBILL_DATA_DIR / 'sql.db'}"
+PROBILL_FILESTORAGE_PATH = str(PROBILL_DATA_DIR / "files")
+
 
 KH_DOCSTORE = {
     # "__type__": "kotaemon.storages.ElasticsearchDocumentStore",
@@ -137,10 +142,10 @@ if config("OPENAI_API_KEY", default=""):
             "base_url": config("OPENAI_API_BASE", default="")
             or "https://api.openai.com/v1",
             "api_key": config("OPENAI_API_KEY", default=""),
-            "model": config("OPENAI_CHAT_MODEL", default="gpt-3.5-turbo"),
+            "model": config("OPENAI_CHAT_MODEL", default="gpt-4o-mini"),
             "timeout": 20,
         },
-        "default": True,
+        "default": False,
     }
     KH_EMBEDDINGS["openai"] = {
         "spec": {
@@ -153,27 +158,27 @@ if config("OPENAI_API_KEY", default=""):
             "timeout": 10,
             "context_length": 8191,
         },
-        "default": True,
+        "default": False,
     }
 
 if config("LOCAL_MODEL", default=""):
     KH_LLMS["ollama"] = {
         "spec": {
             "__type__": "kotaemon.llms.ChatOpenAI",
-            "base_url": "http://localhost:11434/v1/",
-            "model": config("LOCAL_MODEL", default="llama3.1:8b"),
+            "base_url": "http://10.0.40.49:11434/v1/",
+            "model": config("LOCAL_MODEL", default="llama3.2:3b-instruct-fp16"),
             "api_key": "ollama",
         },
-        "default": False,
+        "default": True,
     }
     KH_EMBEDDINGS["ollama"] = {
         "spec": {
             "__type__": "kotaemon.embeddings.OpenAIEmbeddings",
-            "base_url": "http://localhost:11434/v1/",
-            "model": config("LOCAL_MODEL_EMBEDDINGS", default="nomic-embed-text"),
+            "base_url": "http://10.0.40.49:11434/v1/",
+            "model": config("LOCAL_MODEL_EMBEDDINGS", default="nomic-embed-text:latest"),
             "api_key": "ollama",
         },
-        "default": False,
+        "default": True,
     }
 
     KH_EMBEDDINGS["fast_embed"] = {
@@ -298,7 +303,7 @@ KH_INDICES = [
                 ".png, .jpeg, .jpg, .tiff, .tif, .pdf, .xls, .xlsx, .doc, .docx, "
                 ".pptx, .csv, .html, .mhtml, .txt, .md, .zip"
             ),
-            "private": False,
+            "private": True,
         },
         "index_type": "ktem.index.file.FileIndex",
     },
@@ -309,7 +314,7 @@ KH_INDICES = [
                 ".png, .jpeg, .jpg, .tiff, .tif, .pdf, .xls, .xlsx, .doc, .docx, "
                 ".pptx, .csv, .html, .mhtml, .txt, .md, .zip"
             ),
-            "private": False,
+            "private": True,
         },
         "index_type": "ktem.index.file.graph.GraphRAGIndex",
     },
