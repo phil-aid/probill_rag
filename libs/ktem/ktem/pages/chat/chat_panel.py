@@ -21,24 +21,14 @@ class ChatPanel(BasePage):
             bubble_full_width=False,
         )
         with gr.Row():
-            self.text_input = gr.Text(
-                placeholder="Chat input",
-                scale=15,
+            self.text_input = gr.MultimodalTextbox(
+                interactive=True,
+                scale=20,
+                file_count="multiple",
+                placeholder="Type a message (or tag a file with @filename)",
                 container=False,
-                max_lines=10,
-            )
-            self.submit_btn = gr.Button(
-                value="Send",
-                scale=1,
-                min_width=10,
-                variant="primary",
-                elem_classes=["cap-button-height"],
-            )
-            self.regen_btn = gr.Button(
-                value="Regen",
-                scale=1,
-                min_width=10,
-                elem_classes=["cap-button-height"],
+                show_label=False,
+                elem_id="chat-input",
             )
 
     def submit_msg(self, chat_input, chat_history):

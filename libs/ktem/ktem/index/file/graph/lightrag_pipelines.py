@@ -28,28 +28,27 @@ from .pipelines import GraphRAGIndexingPipeline
 from .visualize import create_knowledge_graph, visualize_graph
 
 try:
-    from nano_graphrag import GraphRAG, QueryParam
-    from nano_graphrag._op import (
-        _find_most_related_community_from_entities,
+    from lightrag import LightRAG, QueryParam
+    from lightrag.operate import (
         _find_most_related_edges_from_entities,
         _find_most_related_text_unit_from_entities,
     )
-    from nano_graphrag._utils import EmbeddingFunc, compute_args_hash
+    from lightrag.utils import EmbeddingFunc, compute_args_hash
 
 except ImportError:
     print(
         (
-            "Nano-GraphRAG dependencies not installed. "
-            "Try `pip install nano-graphrag` to install. "
-            "Nano-GraphRAG retriever pipeline will not work properly."
+            "LightRAG dependencies not installed. "
+            "Try `pip install git+https://github.com/HKUDS/LightRAG.git` to install. "
+            "LighthRAG retriever pipeline will not work properly."
         )
     )
 
 
-logging.getLogger("nano-graphrag").setLevel(logging.INFO)
+logging.getLogger("lightrag").setLevel(logging.INFO)
 
 
-filestorage_path = Path(settings.KH_FILESTORAGE_PATH) / "nano_graphrag"
+filestorage_path = Path(settings.KH_FILESTORAGE_PATH) / "lightrag"
 filestorage_path.mkdir(parents=True, exist_ok=True)
 
 INDEX_BATCHSIZE = 4
@@ -148,14 +147,13 @@ def clean_quote(input: str) -> str:
     return re.sub(r"[\"']", "", input)
 
 
-async def nano_graph_rag_build_local_query_context(
+async def lightrag_build_local_query_context(
     graph_func,
     query,
     query_param,
 ):
     knowledge_graph_inst = graph_func.chunk_entity_relation_graph
     entities_vdb = graph_func.entities_vdb
-    community_reports = graph_func.community_reports
     text_chunks_db = graph_func.text_chunks
 
     results = await entities_vdb.query(query, top_k=query_param.top_k)
@@ -173,15 +171,26 @@ async def nano_graph_rag_build_local_query_context(
         for k, n, d in zip(results, node_datas, node_degrees)
         if n is not None
     ]
-    use_communities = await _find_most_related_community_from_entities(
-        node_datas, query_param, community_reports
+
+    try:
+        use_text_units = await _find_most_related_text_unit_from_entities(
+            node_datas, query_param, text_chunks_db, knowledge_graph_inst
+        )
+    except Exception:
+        use_text_units = []
+
+    try:
+        use_relations = await _find_most_related_edges_from_entities(
+            node_datas, query_param, knowledge_graph_inst
+        )
+    except Exception:
+        use_relations = []
+
+    logging.info(
+        f"Local query uses {len(node_datas)} entities, "
+        f"{len(use_relations)} relations, {len(use_text_units)} text units"
     )
-    use_text_units = await _find_most_related_text_unit_from_entities(
-        node_datas, query_param, text_chunks_db, knowledge_graph_inst
-    )
-    use_relations = await _find_most_related_edges_from_entities(
-        node_datas, query_param, knowledge_graph_inst
-    )
+
     entites_section_list = [["id", "entity", "type", "description", "rank"]]
     for i, n in enumerate(node_datas):
         entites_section_list.append(
@@ -196,7 +205,7 @@ async def nano_graph_rag_build_local_query_context(
     entities_df = list_of_list_to_df(entites_section_list)
 
     relations_section_list = [
-        ["id", "source", "target", "description", "weight", "rank"]
+        ["id", "source", "target", "description", "keywords", "weight", "rank"]
     ]
     for i, e in enumerate(use_relations):
         relations_section_list.append(
@@ -205,36 +214,31 @@ async def nano_graph_rag_build_local_query_context(
                 clean_quote(e["src_tgt"][0]),
                 clean_quote(e["src_tgt"][1]),
                 clean_quote(e["description"]),
+                e["keywords"],
                 e["weight"],
                 e["rank"],
             ]
         )
     relations_df = list_of_list_to_df(relations_section_list)
 
-    communities_section_list = [["id", "content"]]
-    for i, c in enumerate(use_communities):
-        communities_section_list.append([str(i), c["report_string"]])
-    communities_df = list_of_list_to_df(communities_section_list)
-
     text_units_section_list = [["id", "content"]]
     for i, t in enumerate(use_text_units):
         text_units_section_list.append([str(i), t["content"]])
     sources_df = list_of_list_to_df(text_units_section_list)
 
-    return entities_df, relations_df, communities_df, sources_df
+    return entities_df, relations_df, sources_df
 
 
 def build_graphrag(working_dir, llm_func, embedding_func):
-    graphrag_func = GraphRAG(
+    graphrag_func = LightRAG(
         working_dir=working_dir,
-        best_model_func=llm_func,
-        cheap_model_func=llm_func,
+        llm_model_func=llm_func,
         embedding_func=embedding_func,
     )
     return graphrag_func
 
 
-class NanoGraphRAGIndexingPipeline(GraphRAGIndexingPipeline):
+class LightRAGIndexingPipeline(GraphRAGIndexingPipeline):
     """GraphRAG specific indexing pipeline"""
 
     prompts: dict[str, str] = {}
@@ -242,7 +246,7 @@ class NanoGraphRAGIndexingPipeline(GraphRAGIndexingPipeline):
     @classmethod
     def get_user_settings(cls) -> dict:
         try:
-            from nano_graphrag.prompt import PROMPTS
+            from lightrag.prompt import PROMPTS
 
             blacklist_keywords = ["default", "response", "process"]
             return {
@@ -261,7 +265,7 @@ class NanoGraphRAGIndexingPipeline(GraphRAGIndexingPipeline):
             return {}
 
     def call_graphrag_index(self, graph_id: str, docs: list[Document]):
-        from nano_graphrag.prompt import PROMPTS
+        from lightrag.prompt import PROMPTS
 
         # modify the prompt if it is set in the settings
         for prompt_name, content in self.prompts.items():
@@ -312,6 +316,7 @@ class NanoGraphRAGIndexingPipeline(GraphRAGIndexingPipeline):
             channel="debug",
             text=f"[GraphRAG] Indexed {process_doc_count} / {total_docs} documents.",
         )
+
         for doc_id in range(0, len(all_docs), INDEX_BATCHSIZE):
             cur_docs = all_docs[doc_id : doc_id + INDEX_BATCHSIZE]
             combined_doc = "\n".join(cur_docs)
@@ -343,7 +348,7 @@ class NanoGraphRAGIndexingPipeline(GraphRAGIndexingPipeline):
         return file_ids, errors, all_docs
 
 
-class NanoGraphRAGRetrieverPipeline(BaseFileIndexRetriever):
+class LightRAGRetrieverPipeline(BaseFileIndexRetriever):
     """GraphRAG specific retriever pipeline"""
 
     Index = Param(help="The SQLAlchemy Index table")
@@ -356,7 +361,7 @@ class NanoGraphRAGRetrieverPipeline(BaseFileIndexRetriever):
             "search_type": {
                 "name": "Search type",
                 "value": "local",
-                "choices": ["local", "global"],
+                "choices": ["local", "global", "hybrid"],
                 "component": "dropdown",
                 "info": "Whether to use local or global search in the graph.",
             }
@@ -402,7 +407,7 @@ class NanoGraphRAGRetrieverPipeline(BaseFileIndexRetriever):
         )
 
     def format_context_records(
-        self, entities, relationships, reports, sources
+        self, entities, relationships, sources
     ) -> list[RetrievedDocument]:
         docs = []
         context: str = ""
@@ -416,14 +421,6 @@ class NanoGraphRAGRetrieverPipeline(BaseFileIndexRetriever):
         context = relationships[["source", "target", "description"]].to_markdown(
             index=False
         )
-        docs.append(self._to_document(header, context))
-
-        header = "\n<b>Reports</b>\n"
-        context = ""
-        for _, row in reports.iterrows():
-            title, content = row["id"], row["content"]  # not contain title
-            context += f"\n\n<h5>Report <b>{title}</b></h5>\n"
-            context += content
         docs.append(self._to_document(header, context))
 
         header = "\n<b>Sources</b>\n"
@@ -452,17 +449,11 @@ class NanoGraphRAGRetrieverPipeline(BaseFileIndexRetriever):
 
         # only local mode support graph visualization
         if query_params.mode == "local":
-            entities, relationships, reports, sources = asyncio.run(
-                nano_graph_rag_build_local_query_context(
-                    graphrag_func, text, query_params
-                )
+            entities, relationships, sources = asyncio.run(
+                lightrag_build_local_query_context(graphrag_func, text, query_params)
             )
-
-            documents = self.format_context_records(
-                entities, relationships, reports, sources
-            )
+            documents = self.format_context_records(entities, relationships, sources)
             plot = self.plot_graph(relationships)
-
             documents += [
                 RetrievedDocument(
                     text="",
@@ -475,6 +466,9 @@ class NanoGraphRAGRetrieverPipeline(BaseFileIndexRetriever):
             ]
         else:
             context = graphrag_func.query(text, query_params)
+
+            # account for missing ``` for closing code block
+            context += "\n```"
 
             documents = [
                 RetrievedDocument(

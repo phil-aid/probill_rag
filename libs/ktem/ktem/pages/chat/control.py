@@ -48,6 +48,24 @@ class ConversationControl(BasePage):
                 elem_classes=["no-background", "body-text-color"],
                 elem_id="toggle-dark-button",
             )
+            self.btn_chat_expand = gr.Button(
+                value="",
+                icon=f"{ASSETS_DIR}/expand.svg",
+                scale=1,
+                size="sm",
+                elem_classes=["no-background", "body-text-color"],
+                elem_id="chat-expand-button",
+            )
+            self.btn_info_expand = gr.Button(
+                value="",
+                icon=f"{ASSETS_DIR}/expand.svg",
+                min_width=2,
+                scale=1,
+                size="sm",
+                elem_classes=["no-background", "body-text-color"],
+                elem_id="info-expand-button",
+            )
+
             self.btn_toggle_dark_mode.click(
                 None,
                 js="""
@@ -68,9 +86,17 @@ class ConversationControl(BasePage):
         )
 
         with gr.Row() as self._new_delete:
-            self.btn_new = gr.Button(
+            self.cb_is_public = gr.Checkbox(
+                value=False,
+                label="Shared",
+                min_width=10,
+                scale=4,
+                elem_id="is-public-checkbox",
+                container=False,
+            )
+            self.btn_conversation_rn = gr.Button(
                 value="",
-                icon=f"{ASSETS_DIR}/new.svg",
+                icon=f"{ASSETS_DIR}/rename.svg",
                 min_width=2,
                 scale=1,
                 size="sm",
@@ -84,24 +110,14 @@ class ConversationControl(BasePage):
                 size="sm",
                 elem_classes=["no-background", "body-text-color"],
             )
-            self.btn_conversation_rn = gr.Button(
+            self.btn_new = gr.Button(
                 value="",
-                icon=f"{ASSETS_DIR}/rename.svg",
+                icon=f"{ASSETS_DIR}/new.svg",
                 min_width=2,
                 scale=1,
                 size="sm",
                 elem_classes=["no-background", "body-text-color"],
-            )
-            self.btn_info_expand = gr.Button(
-                value="",
-                icon=f"{ASSETS_DIR}/sidebar.svg",
-                min_width=2,
-                scale=1,
-                size="sm",
-                elem_classes=["no-background", "body-text-color"],
-            )
-            self.cb_is_public = gr.Checkbox(
-                value=False, label="Shared", min_width=10, scale=4
+                elem_id="new-conv-button",
             )
 
         with gr.Row(visible=False) as self._delete_confirm:
@@ -123,9 +139,7 @@ class ConversationControl(BasePage):
                 visible=False,
             )
 
-        self.followup_suggestions = gr.State([])
-        if getattr(flowsettings, "KH_FEATURE_CHAT_SUGGESTION", False):
-            self.chat_suggestion = ChatSuggestion(self._app)
+        self.chat_suggestion = ChatSuggestion(self._app)
 
     def load_chat_history(self, user_id):
         """Reload chat history"""
@@ -243,7 +257,6 @@ class ConversationControl(BasePage):
                     selected = {}
 
                 chats = result.data_source.get("messages", [])
-
                 chat_suggestions = result.data_source.get("chat_suggestions", [])
 
                 retrieval_history: list[str] = result.data_source.get(

@@ -2,15 +2,15 @@ from typing import Any
 
 from ..base import BaseFileIndexIndexing, BaseFileIndexRetriever
 from .graph_index import GraphRAGIndex
-from .nano_pipelines import NanoGraphRAGIndexingPipeline, NanoGraphRAGRetrieverPipeline
+from .lightrag_pipelines import LightRAGIndexingPipeline, LightRAGRetrieverPipeline
 
 
-class NanoGraphRAGIndex(GraphRAGIndex):
+class LightRAGIndex(GraphRAGIndex):
     def _setup_indexing_cls(self):
-        self._indexing_pipeline_cls = NanoGraphRAGIndexingPipeline
+        self._indexing_pipeline_cls = LightRAGIndexingPipeline
 
     def _setup_retriever_cls(self):
-        self._retriever_pipeline_cls = [NanoGraphRAGRetrieverPipeline]
+        self._retriever_pipeline_cls = [LightRAGRetrieverPipeline]
 
     def get_indexing_pipeline(self, settings, user_id) -> BaseFileIndexIndexing:
         pipeline = super().get_indexing_pipeline(settings, user_id)
@@ -34,7 +34,7 @@ class NanoGraphRAGIndex(GraphRAGIndex):
         search_type = settings.get(prefix + "search_type", "local")
 
         retrievers = [
-            NanoGraphRAGRetrieverPipeline(
+            LightRAGRetrieverPipeline(
                 file_ids=file_ids,
                 Index=self._resources["Index"],
                 search_type=search_type,

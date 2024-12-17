@@ -4,15 +4,15 @@ FROM python:3.10-slim AS lite
 # Common dependencies
 RUN apt-get update -qqy && \
     apt-get install -y --no-install-recommends \
-      ssh \
-      git \
-      gcc \
-      g++ \
-      poppler-utils \
-      libpoppler-dev \
-      unzip \
-      curl \
-      cargo
+        ssh \
+        git \
+        gcc \
+        g++ \
+        poppler-utils \
+        libpoppler-dev \
+        unzip \
+        curl \
+        cargo
 
 # Setup args
 ARG TARGETPLATFORM
@@ -50,7 +50,7 @@ RUN --mount=type=ssh  \
 
 RUN --mount=type=ssh  \
     --mount=type=cache,target=/root/.cache/pip  \
-    if [ "$TARGETARCH" = "amd64" ]; then pip install graphrag future; fi
+    if [ "$TARGETARCH" = "amd64" ]; then pip install "graphrag<=0.3.6" future; fi
 
 # Clean up
 RUN apt-get autoremove \
@@ -64,13 +64,13 @@ FROM lite AS full
 # Additional dependencies for full version
 RUN apt-get update -qqy && \
     apt-get install -y --no-install-recommends \
-      tesseract-ocr \
-      tesseract-ocr-jpn \
-      libsm6 \
-      libxext6 \
-      libreoffice \
-      ffmpeg \
-      libmagic-dev
+        tesseract-ocr \
+        tesseract-ocr-jpn \
+        libsm6 \
+        libxext6 \
+        libreoffice \
+        ffmpeg \
+        libmagic-dev
 
 # Install torch and torchvision for unstructured
 RUN --mount=type=ssh  \
@@ -83,6 +83,16 @@ RUN --mount=type=ssh  \
     pip install -e "libs/kotaemon[adv]" \
     && pip install unstructured[all-docs]
 
+# Install lightRAG
+ENV USE_LIGHTRAG=true
+RUN --mount=type=ssh  \
+    --mount=type=cache,target=/root/.cache/pip  \
+    pip install aioboto3 nano-vectordb ollama xxhash "lightrag-hku<=0.0.8"
+
+RUN --mount=type=ssh  \
+    --mount=type=cache,target=/root/.cache/pip  \
+    pip install "docling<=2.5.2"
+
 # Clean up
 RUN apt-get autoremove \
     && apt-get clean \
@@ -90,7 +100,7 @@ RUN apt-get autoremove \
     && rm -rf ~/.cache
 
 # Download nltk packages as required for unstructured
-RUN python -c "from unstructured.nlp.tokenize import _download_nltk_packages_if_not_present; _download_nltk_packages_if_not_present()"
+# RUN python -c "from unstructured.nlp.tokenize import _download_nltk_packages_if_not_present; _download_nltk_packages_if_not_present()"
 
 COPY ./libs/probill/probill/requirements.txt /app/probill/requirements.txt
 RUN pip install -r /app/probill/requirements.txt

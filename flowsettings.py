@@ -4,6 +4,7 @@ from inspect import currentframe, getframeinfo
 from pathlib import Path
 
 from decouple import config
+from ktem.utils.lang import SUPPORTED_LANGUAGE_MAP
 from theflow.settings.default import *  # noqa
 
 cur_frame = currentframe()
@@ -26,6 +27,7 @@ if not KH_APP_VERSION:
 
 KH_ENABLE_FIRST_SETUP = True
 KH_DEMO_MODE = config("KH_DEMO_MODE", default=False, cast=bool)
+KH_OLLAMA_URL = config("KH_OLLAMA_URL", default="http://localhost:11434/v1/")
 
 # App can be ran from anywhere and it's not trivial to decide where to store app data.
 # So let's use the same directory as the flowsetting.py file.
@@ -65,7 +67,9 @@ os.environ["HF_HUB_CACHE"] = str(KH_APP_DATA_DIR / "huggingface")
 KH_DOC_DIR = this_dir / "docs"
 
 KH_MODE = "dev"
-KH_FEATURE_CHAT_SUGGESTION = config("KH_FEATURE_CHAT_SUGGESTION", default=False)
+KH_FEATURE_CHAT_SUGGESTION = config(
+    "KH_FEATURE_CHAT_SUGGESTION", default=False, cast=bool
+)
 KH_FEATURE_USER_MANAGEMENT = config(
     "KH_FEATURE_USER_MANAGEMENT", default=True, cast=bool
 )
@@ -198,11 +202,11 @@ KH_LLMS["claude"] = {
     },
     "default": False,
 }
-KH_LLMS["gemini"] = {
+KH_LLMS["google"] = {
     "spec": {
         "__type__": "kotaemon.llms.chats.LCGeminiChat",
-        "model_name": "gemini-1.5-pro",
-        "api_key": "your-key",
+        "model_name": "gemini-1.5-flash",
+        "api_key": config("GOOGLE_API_KEY", default="your-key"),
     },
     "default": False,
 }
@@ -234,6 +238,13 @@ KH_EMBEDDINGS["cohere"] = {
     },
     "default": False,
 }
+KH_EMBEDDINGS["google"] = {
+    "spec": {
+        "__type__": "kotaemon.embeddings.LCGoogleEmbeddings",
+        "model": "models/text-embedding-004",
+        "google_api_key": config("GOOGLE_API_KEY", default="your-key"),
+    }
+}
 # KH_EMBEDDINGS["huggingface"] = {
 #     "spec": {
 #         "__type__": "kotaemon.embeddings.LCHuggingFaceEmbeddings",
@@ -259,7 +270,7 @@ KH_REASONINGS = [
     "ktem.reasoning.react.ReactAgentPipeline",
     "ktem.reasoning.rewoo.RewooAgentPipeline",
 ]
-KH_REASONINGS_USE_MULTIMODAL = False
+KH_REASONINGS_USE_MULTIMODAL = config("USE_MULTIMODAL", default=False, cast=bool)
 KH_VLM_ENDPOINT = "{0}/openai/deployments/{1}/chat/completions?api-version={2}".format(
     config("AZURE_OPENAI_ENDPOINT", default=""),
     config("OPENAI_VISION_DEPLOYMENT_NAME", default="gpt-4o"),
@@ -280,7 +291,7 @@ SETTINGS_REASONING = {
     "lang": {
         "name": "Language",
         "value": "en",
-        "choices": [("English", "en"), ("Japanese", "ja"), ("Vietnamese", "vi")],
+        "choices": [(lang, code) for code, lang in SUPPORTED_LANGUAGE_MAP.items()],
         "component": "dropdown",
     },
     "max_context_length": {
@@ -291,19 +302,24 @@ SETTINGS_REASONING = {
 }
 
 USE_NANO_GRAPHRAG = config("USE_NANO_GRAPHRAG", default=False, cast=bool)
-GRAPHRAG_INDEX_TYPE = (
-    "ktem.index.file.graph.GraphRAGIndex"
-    if not USE_NANO_GRAPHRAG
-    else "ktem.index.file.graph.NanoGraphRAGIndex"
-)
+USE_LIGHTRAG = config("USE_LIGHTRAG", default=True, cast=bool)
+
+GRAPHRAG_INDEX_TYPES = ["ktem.index.file.graph.GraphRAGIndex"]
+
+if USE_NANO_GRAPHRAG:
+    GRAPHRAG_INDEX_TYPES.append("ktem.index.file.graph.NanoGraphRAGIndex")
+if USE_LIGHTRAG:
+    GRAPHRAG_INDEX_TYPES.append("ktem.index.file.graph.LightRAGIndex")
+
 KH_INDEX_TYPES = [
     "ktem.index.file.FileIndex",
-    GRAPHRAG_INDEX_TYPE,
+    *GRAPHRAG_INDEX_TYPES,
 ]
 
-GRAPHRAG_INDEX = (
+GRAPHRAG_INDICES = [
     {
-        "name": "GraphRAG",
+        "name": graph_type.split(".")[-1].replace("Index", "")
+        + " Collection",  # get last name
         "config": {
             "supported_file_types": (
                 ".png, .jpeg, .jpg, .tiff, .tif, .pdf, .xls, .xlsx, .doc, .docx, "
@@ -311,25 +327,14 @@ GRAPHRAG_INDEX = (
             ),
             "private": False,
         },
-        "index_type": "ktem.index.file.graph.GraphRAGIndex",
+        "index_type": graph_type,
     }
-    if not USE_NANO_GRAPHRAG
-    else {
-        "name": "NanoGraphRAG",
-        "config": {
-            "supported_file_types": (
-                ".png, .jpeg, .jpg, .tiff, .tif, .pdf, .xls, .xlsx, .doc, .docx, "
-                ".pptx, .csv, .html, .mhtml, .txt, .md, .zip"
-            ),
-            "private": False,
-        },
-        "index_type": "ktem.index.file.graph.NanoGraphRAGIndex",
-    }
-)
+    for graph_type in GRAPHRAG_INDEX_TYPES
+]
 
 KH_INDICES = [
     {
-        "name": "File",
+        "name": "File Collection",
         "config": {
             "supported_file_types": (
                 ".png, .jpeg, .jpg, .tiff, .tif, .pdf, .xls, .xlsx, .doc, .docx, "
@@ -339,16 +344,5 @@ KH_INDICES = [
         },
         "index_type": "ktem.index.file.FileIndex",
     },
-    {
-        "name": "GraphRAG",
-        "config": {
-            "supported_file_types": (
-                ".png, .jpeg, .jpg, .tiff, .tif, .pdf, .xls, .xlsx, .doc, .docx, "
-                ".pptx, .csv, .html, .mhtml, .txt, .md, .zip"
-            ),
-            "private": True,
-        },
-        "index_type": "ktem.index.file.graph.GraphRAGIndex",
-    },
-    GRAPHRAG_INDEX,
+    *GRAPHRAG_INDICES,
 ]
