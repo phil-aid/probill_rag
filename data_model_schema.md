@@ -1,3 +1,8 @@
+# Questions:
+### 1. Could a physician be a biller? Is the role an exclusive selection or multiple selections?
+### 2. Is there a scenario where multiple billers work on the same encounter? For example, a biller verifies the face sheet info, and another works on coding.
+
+---
 ```mermaid
 erDiagram
 
