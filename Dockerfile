@@ -40,8 +40,6 @@ COPY ./scripts /app/scripts
 COPY ./docs /app/docs
 COPY ./templates /app/templates
 COPY ./Dockerfile /app/Dockerfile
-COPY ./libs/probill/probill/requirements.txt /app/probill/requirements.txt
-RUN pip install -r /app/probill/requirements.txt
 
 # Install pip packages
 RUN --mount=type=ssh  \
@@ -93,6 +91,9 @@ RUN apt-get autoremove \
 
 # Download nltk packages as required for unstructured
 RUN python -c "from unstructured.nlp.tokenize import _download_nltk_packages_if_not_present; _download_nltk_packages_if_not_present()"
+
+COPY ./libs/probill/probill/requirements.txt /app/probill/requirements.txt
+RUN pip install -r /app/probill/requirements.txt
 
 COPY ./libs/probill/probill /app/probill
 COPY ./* /app/
